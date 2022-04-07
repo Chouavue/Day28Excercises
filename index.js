@@ -1,6 +1,12 @@
 // const http = require('http')
+const { application } = require('express');
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
+
+morgan.token(`body`, (req)=> JSON.stringify(req.body));
+app.use(morgan( `:method :url :status :response-time ms :body`));
+
 
 let persons = [
     { 
@@ -29,12 +35,12 @@ app.get('/', (request, response) => {
 
 })
 
-app.get('/api/persons', (request, response) => {
-    response.end(JSON.stringify(persons))
+app.get('/api/persons', morgan(`tiny`),(request, response) => {
+    response.send(JSON.stringify(persons))
 })
 
 app.get('/info', (request, response) => {
-        response.end(`<h1>Phonebook has info for 4 people</h1> <p>${new Date()}</p>`)
+        response.send(`<h1>Phonebook has info for 4 people</h1> <p>${new Date()}</p>`)
 
 })
 app.get('/api/persons/:id', (request, response) => {
@@ -74,12 +80,16 @@ app.post('/api/persons', (request, response) => {
     console.log(persons)
     persons=persons.concat(person)
     response.json(persons)
+
+
 })
+
 
 
 const PORT = 3001
     app.listen(PORT)
     console.log(`Server running on port ${PORT}`)
+
 
 
 
